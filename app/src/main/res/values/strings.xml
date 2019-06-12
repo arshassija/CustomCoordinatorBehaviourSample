@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">CustomCoordinatorBehaviourSample</string>
+    <string name="app_name">Sweet Animations</string>
+    <string name="snackbar_msg">This is snackbar layout</string>
+
+    <string-array name="animation_list">
+        <item>Custom Coordinator Behaviour</item>
+        <item>Circular reveal effect</item>
+    </string-array>
 </resources>

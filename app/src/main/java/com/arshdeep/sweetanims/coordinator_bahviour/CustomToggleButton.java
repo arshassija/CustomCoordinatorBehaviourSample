@@ -1,4 +1,4 @@
-package com.arshdeep.customcoordinatorbehavioursample.custom_view;
+package com.arshdeep.sweetanims.coordinator_bahviour;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
