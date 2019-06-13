@@ -70,8 +70,8 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.flexible -> doImmediateUpdate()
-            R.id.immediate -> doFlexibleUpdate()
+            R.id.flexible -> doFlexibleUpdate()
+            R.id.immediate -> doImmediateUpdate()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     // For a flexible update, use AppUpdateType.FLEXIBLE
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                Log.d(TAG, "Update is available")
                 appUpdateManager.startUpdateFlowForResult(
                         // Pass the intent that is returned by 'getAppUpdateInfo()'.
                         appUpdateInfo,
@@ -121,7 +122,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     // For a flexible update, use AppUpdateType.FLEXIBLE
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
-
+                Log.d(TAG, "Update is available")
                 // Before starting an update, register a listener for updates.
                 appUpdateManager.registerListener(this@MainActivity)
                 appUpdateManager.startUpdateFlowForResult(
