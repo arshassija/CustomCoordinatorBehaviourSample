@@ -5,5 +5,6 @@
     <string-array name="animation_list">
         <item>Custom Coordinator Behaviour</item>
         <item>Circular reveal effect</item>
+        <item>Animate layout changes</item>
     </string-array>
 </resources>

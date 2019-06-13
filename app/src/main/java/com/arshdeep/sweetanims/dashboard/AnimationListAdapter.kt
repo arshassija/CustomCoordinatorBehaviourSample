@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.arshdeep.sweetanims.R
+import com.arshdeep.sweetanims.animate_changes.AnimateLayoutChangesActivity
 import com.arshdeep.sweetanims.circular_reveal.CircularRevealActivity
 import com.arshdeep.sweetanims.coordinator_bahviour.CustomCoordinatorLayoutBehaviourActivity
 
@@ -34,6 +35,10 @@ class AnimationListAdapter(var context: Context, var list: List<String>) : Recyc
                 }
                 1 -> {
                     intent = Intent(context, CircularRevealActivity::class.java)
+                    context.startActivity(intent)
+                }
+                2-> {
+                    intent = Intent(context, AnimateLayoutChangesActivity::class.java)
                     context.startActivity(intent)
                 }
             }
