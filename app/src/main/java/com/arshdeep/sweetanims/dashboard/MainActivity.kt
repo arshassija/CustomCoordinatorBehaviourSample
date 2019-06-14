@@ -22,7 +22,6 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     private val TAG = "UpdateStatus"
@@ -40,6 +39,8 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         appUpdateManager
                 .appUpdateInfo
                 .addOnSuccessListener {
+                    Log.d(TAG, "InstallStatus = ${it.installStatus()}")
+                    Log.d(TAG, "updateAvailability = ${it.updateAvailability()}")
                     if (it.installStatus() == InstallStatus.DOWNLOADED) {
                         popupSnackbarForCompleteUpdate()
                     } else if (it.updateAvailability()
@@ -70,13 +71,14 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.flexible -> doFlexibleUpdate()
-            R.id.immediate -> doImmediateUpdate()
+            R.id.flexible -> doUpdate(AppUpdateType.FLEXIBLE)
+            R.id.immediate -> doUpdate(AppUpdateType.IMMEDIATE)
         }
         return super.onOptionsItemSelected(item)
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d(TAG, "resultCode = $resultCode")
         if (requestCode === AppConstants.REQUEST_CODE_IMMIDIATE_UPDATE) {
             if (resultCode !== Activity.RESULT_OK) {
                 Log.d(TAG, "Update flow failed! Result code: $resultCode")
@@ -88,7 +90,9 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     private lateinit var appUpdateManager: AppUpdateManager
 
-    private fun doImmediateUpdate() {
+    private fun doUpdate(appUpdateType: Int) {
+
+        val requestCode = if (appUpdateType == AppUpdateType.IMMEDIATE) AppConstants.REQUEST_CODE_IMMIDIATE_UPDATE else AppConstants.REQUEST_CODE_FLEXIBLE_UPDATE
 
         // Returns an intent object that you use to check for an update.
         val appUpdateInfoTask = appUpdateManager.appUpdateInfo
@@ -97,43 +101,18 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     // For a flexible update, use AppUpdateType.FLEXIBLE
-                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                    && appUpdateInfo.isUpdateTypeAllowed(appUpdateType)) {
                 Log.d(TAG, "Update is available")
-                appUpdateManager.startUpdateFlowForResult(
-                        // Pass the intent that is returned by 'getAppUpdateInfo()'.
-                        appUpdateInfo,
-                        // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
-                        AppUpdateType.IMMEDIATE,
-                        // The current activity making the update request.
-                        this,
-                        // Include a request code to later monitor this update request.
-                        AppConstants.REQUEST_CODE_IMMIDIATE_UPDATE)
-            }
-        }
-    }
-
-    private fun doFlexibleUpdate() {
-
-        // Returns an intent object that you use to check for an update.
-        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-
-        // Checks that the platform will allow the specified type of update.
-        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                    // For a flexible update, use AppUpdateType.FLEXIBLE
-                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
-                Log.d(TAG, "Update is available")
-                // Before starting an update, register a listener for updates.
                 appUpdateManager.registerListener(this@MainActivity)
                 appUpdateManager.startUpdateFlowForResult(
                         // Pass the intent that is returned by 'getAppUpdateInfo()'.
                         appUpdateInfo,
                         // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
-                        AppUpdateType.FLEXIBLE,
+                        appUpdateType,
                         // The current activity making the update request.
                         this,
                         // Include a request code to later monitor this update request.
-                        AppConstants.REQUEST_CODE_FLEXIBLE_UPDATE)
+                        requestCode)
             }
         }
     }
@@ -150,12 +129,12 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
     }
 
     override fun onStateUpdate(state: InstallState?) {
-
+        Log.d(TAG, "installStatus = ${state?.installStatus()}")
+        Log.d(TAG, "installErrorCode = ${state?.installErrorCode()}")
         if (state?.installStatus() == InstallStatus.DOWNLOADED) {
             // After the update is downloaded, show a notification
             // and request user confirmation to restart the app.
             popupSnackbarForCompleteUpdate()
         }
-
     }
 }
