@@ -52,6 +52,10 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
                                 this@MainActivity,
                                 AppConstants.REQUEST_CODE_IMMIDIATE_UPDATE)
                     }
+                }.addOnCompleteListener {
+                    Log.d(TAG, "completeListener")
+                }.addOnFailureListener {
+                    Log.d(TAG, "failureListener ${it.localizedMessage}")
                 }
     }
 
@@ -114,7 +118,12 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
                         // Include a request code to later monitor this update request.
                         requestCode)
             }
+        }.addOnCompleteListener {
+            Log.d(TAG, "completeListener")
+        }.addOnFailureListener {
+            Log.d(TAG, "failureListener ${it.localizedMessage}")
         }
+
     }
 
     private fun popupSnackbarForCompleteUpdate() {
