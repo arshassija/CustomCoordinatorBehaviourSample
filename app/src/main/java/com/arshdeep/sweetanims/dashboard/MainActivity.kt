@@ -13,6 +13,7 @@ import android.view.View
 import com.arshdeep.sweetanims.AppConstants
 import com.arshdeep.sweetanims.R
 import com.arshdeep.sweetanims.custom_view.DividerItemDecoration
+import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.InstallState
@@ -25,6 +26,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     private val TAG = "UpdateStatus"
+
+    private lateinit var appUpdateInf: AppUpdateInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +42,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         appUpdateManager
                 .appUpdateInfo
                 .addOnSuccessListener {
+                    appUpdateInf = it
                     Log.d(TAG, "InstallStatus = ${it.installStatus()}")
                     Log.d(TAG, "updateAvailability = ${it.updateAvailability()}")
                     if (it.installStatus() == InstallStatus.DOWNLOADED) {
@@ -103,6 +107,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
         // Checks that the platform will allow the specified type of update.
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            appUpdateInf = appUpdateInfo
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     // For a flexible update, use AppUpdateType.FLEXIBLE
                     && appUpdateInfo.isUpdateTypeAllowed(appUpdateType)) {
