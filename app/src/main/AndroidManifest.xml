@@ -19,6 +19,25 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+
+<!--
+                <data
+                    android:host="open"
+                    android:scheme="m91" />
+-->
+                <!--<data
+                    android:host="money91.app.link"
+                    android:scheme="https" />-->
+                <data
+                    android:host="sweetanims.page.link"
+                    android:scheme="https" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".coordinator_bahviour.CustomCoordinatorLayoutBehaviourActivity"
@@ -29,6 +48,15 @@
         <activity
             android:name=".animate_changes.AnimateLayoutChangesActivity"
             android:screenOrientation="portrait" />
+
+        <receiver
+            android:name=".InstallReferrerReceiver"
+            android:exported="true"
+            android:permission="android.permission.INSTALL_PACKAGES">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

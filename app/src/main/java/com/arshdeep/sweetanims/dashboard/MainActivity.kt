@@ -3,6 +3,7 @@ package com.arshdeep.sweetanims.dashboard
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -10,6 +11,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.arshdeep.sweetanims.AppConstants
 import com.arshdeep.sweetanims.R
 import com.arshdeep.sweetanims.custom_view.DividerItemDecoration
@@ -21,6 +23,7 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
@@ -35,6 +38,29 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         // Creates instance of the manager.
         appUpdateManager = AppUpdateManagerFactory.create(this)
         init()
+
+        Handler().postDelayed({
+            initDeepLinkSdks()
+        }, 5000)
+    }
+
+    private fun initDeepLinkSdks() {
+        if (intent.data == null && intent.extras == null) {
+            Log.e("data", "intent.data is null")
+        } else {
+            Log.e("data", intent.data.toString())
+            Log.e("data", intent.extras.toString())
+        }
+        FirebaseDynamicLinks.getInstance().getDynamicLink(intent).addOnSuccessListener { pendingDynamicLinkData ->
+            if (pendingDynamicLinkData != null) {
+                Toast.makeText(this@MainActivity, pendingDynamicLinkData.link.getQueryParameter("name"), Toast.LENGTH_SHORT).show()
+                Log.e("firebase", pendingDynamicLinkData.link.getQueryParameter("name"))
+            } else {
+                Log.e("firebase", "data is null")
+            }
+        }.addOnFailureListener {
+            Log.e("firebase", "failure")
+        }
     }
 
     override fun onResume() {

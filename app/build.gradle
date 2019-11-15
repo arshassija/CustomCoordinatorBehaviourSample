@@ -10,8 +10,8 @@ android {
         applicationId "com.arshdeep.customanims"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 9
-        versionName "1.8"
+        versionCode 13
+        versionName "2.2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -32,4 +32,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation('io.branch.sdk.android:library:2.+') {
+        exclude module: 'answers-shim'
+    }
+
+    implementation 'com.google.firebase:firebase-analytics:16.0.4'
+
+    implementation 'com.google.firebase:firebase-dynamic-links:17.0.0'
 }
+
+apply plugin: 'com.google.gms.google-services'
