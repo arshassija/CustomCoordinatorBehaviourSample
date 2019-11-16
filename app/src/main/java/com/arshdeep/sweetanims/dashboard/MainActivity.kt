@@ -24,6 +24,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Branch.getAutoInstance(applicationContext)
         setContentView(R.layout.activity_main)
         // Creates instance of the manager.
         appUpdateManager = AppUpdateManagerFactory.create(this)
@@ -48,7 +50,9 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         if (intent.data == null && intent.extras == null) {
             Log.e("data", "intent.data is null")
         } else {
+            if (intent.data != null)
             Log.e("data", intent.data.toString())
+            if (intent.extras != null)
             Log.e("data", intent.extras.toString())
         }
         FirebaseDynamicLinks.getInstance().getDynamicLink(intent).addOnSuccessListener { pendingDynamicLinkData ->
@@ -61,6 +65,18 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         }.addOnFailureListener {
             Log.e("firebase", "failure")
         }
+
+        // Branch init
+        Branch.getInstance().initSession({ referringParams, error ->
+            if (error == null) {
+                Log.e("BRANCH SDK", referringParams.toString())
+                Toast.makeText(this@MainActivity, referringParams.toString(), Toast.LENGTH_SHORT).show()
+                // Retrieve deeplink keys from 'referringParams' and evaluate the values to determine where to route the user
+                // Check '+clicked_branch_link' before deciding whether to use your Branch routing logic
+            } else {
+                Log.e("BRANCH SDK", error.message)
+            }
+        }, this.intent.data, this)
     }
 
     override fun onResume() {
