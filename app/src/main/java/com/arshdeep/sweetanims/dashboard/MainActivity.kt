@@ -12,6 +12,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.android.installreferrer.api.InstallReferrerClient
+import com.android.installreferrer.api.InstallReferrerStateListener
 import com.arshdeep.sweetanims.AppConstants
 import com.arshdeep.sweetanims.R
 import com.arshdeep.sweetanims.custom_view.DividerItemDecoration
@@ -33,6 +35,8 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     private lateinit var appUpdateInf: AppUpdateInfo
 
+    private lateinit var referrerClient: InstallReferrerClient
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Branch.getAutoInstance(applicationContext)
@@ -44,6 +48,37 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         Handler().postDelayed({
             initDeepLinkSdks()
         }, 5000)
+
+        getInstallReferrerData()
+    }
+
+    private fun getInstallReferrerData() {
+        referrerClient = InstallReferrerClient.newBuilder(this).build()
+        referrerClient.startConnection(object : InstallReferrerStateListener {
+            override fun onInstallReferrerSetupFinished(responseCode: Int) {
+                Log.e(TAG, "onInstallReferrerSetupFinished : $responseCode")
+                when (responseCode) {
+                    InstallReferrerClient.InstallReferrerResponse.OK -> {
+                        val response = referrerClient.installReferrer
+                        Log.d(TAG, response.installReferrer)
+                        Log.d(TAG, response.referrerClickTimestampSeconds.toString())
+                        Log.d(TAG, response.installBeginTimestampSeconds.toString())
+//                        Log.d(TAG, response.googlePlayInstantParam.toString())
+                        referrerClient.endConnection()
+                    }
+                    InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> {
+                    }
+                    InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> {
+                    }
+                }
+            }
+
+            override fun onInstallReferrerServiceDisconnected() {
+                Log.e(TAG, "onInstallReferrerServiceDisconnected")
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+            }
+        })
     }
 
     private fun initDeepLinkSdks() {
