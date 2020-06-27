@@ -1,7 +1,7 @@
 package com.arshdeep.sweetanims.animate_changes
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import com.arshdeep.sweetanims.R
 import kotlinx.android.synthetic.main.activity_animate_layout_changes.*

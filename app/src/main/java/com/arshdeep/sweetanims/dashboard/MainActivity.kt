@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -24,8 +24,11 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.inmobi.sdk.InMobiSdk
 import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONException
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
@@ -44,6 +47,26 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         Handler().postDelayed({
             initDeepLinkSdks()
         }, 5000)
+
+        initInMobi()
+    }
+
+    private fun initInMobi() {
+        val consent = JSONObject()
+        try { // Provide correct consent value to sdk which is obtained by User
+            consent.put(InMobiSdk.IM_GDPR_CONSENT_AVAILABLE, true)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+
+        InMobiSdk.setLogLevel(InMobiSdk.LogLevel.DEBUG)
+        InMobiSdk.init(this, "0868ad2513734eab9642ac4ac01dd459", consent) { error ->
+            if (error == null) {
+                Log.d(TAG, "InMobi SDK Initialization Success")
+            } else {
+                Log.e(TAG, "InMobi SDK Initialization failed: " + error.message)
+            }
+        }
     }
 
     private fun initDeepLinkSdks() {
@@ -109,7 +132,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         val animationList = resources.getStringArray(R.array.animation_list)
         var list = mutableListOf<String>()
         animationList.forEach { list.add(it) }
-        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         recycler_view.adapter = AnimationListAdapter(this, list)
         recycler_view.addItemDecoration(DividerItemDecoration(this, R.drawable.divider))
     }

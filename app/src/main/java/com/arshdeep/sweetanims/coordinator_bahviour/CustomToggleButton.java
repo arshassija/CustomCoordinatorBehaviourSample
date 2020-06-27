@@ -1,7 +1,7 @@
 package com.arshdeep.sweetanims.coordinator_bahviour;
 
 import android.content.Context;
-import android.support.design.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.widget.ToggleButton;
 
