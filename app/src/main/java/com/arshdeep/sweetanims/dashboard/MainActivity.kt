@@ -4,17 +4,18 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.android.installreferrer.api.InstallReferrerClient
+import com.android.installreferrer.api.InstallReferrerStateListener
 import com.arshdeep.sweetanims.AppConstants
 import com.arshdeep.sweetanims.R
 import com.arshdeep.sweetanims.custom_view.DividerItemDecoration
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -24,17 +25,16 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
-import com.inmobi.sdk.InMobiSdk
 import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONException
-import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     private val TAG = "UpdateStatus"
 
     private lateinit var appUpdateInf: AppUpdateInfo
+
+    private lateinit var referrerClient: InstallReferrerClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,26 +47,36 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         Handler().postDelayed({
             initDeepLinkSdks()
         }, 5000)
-
-        initInMobi()
+        getInstallReferrerData()
     }
 
-    private fun initInMobi() {
-        val consent = JSONObject()
-        try { // Provide correct consent value to sdk which is obtained by User
-            consent.put(InMobiSdk.IM_GDPR_CONSENT_AVAILABLE, true)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-
-        InMobiSdk.setLogLevel(InMobiSdk.LogLevel.DEBUG)
-        InMobiSdk.init(this, "0868ad2513734eab9642ac4ac01dd459", consent) { error ->
-            if (error == null) {
-                Log.d(TAG, "InMobi SDK Initialization Success")
-            } else {
-                Log.e(TAG, "InMobi SDK Initialization failed: " + error.message)
+    private fun getInstallReferrerData() {
+        referrerClient = InstallReferrerClient.newBuilder(this).build()
+        referrerClient.startConnection(object : InstallReferrerStateListener {
+            override fun onInstallReferrerSetupFinished(responseCode: Int) {
+                Log.e(TAG, "onInstallReferrerSetupFinished : $responseCode")
+                when (responseCode) {
+                    InstallReferrerClient.InstallReferrerResponse.OK -> {
+                        val response = referrerClient.installReferrer
+                        Log.d(TAG, response.installReferrer)
+                        Log.d(TAG, response.referrerClickTimestampSeconds.toString())
+                        Log.d(TAG, response.installBeginTimestampSeconds.toString())
+//                        Log.d(TAG, response.googlePlayInstantParam.toString())
+                        referrerClient.endConnection()
+                    }
+                    InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> {
+                    }
+                    InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> {
+                    }
+                }
             }
-        }
+
+            override fun onInstallReferrerServiceDisconnected() {
+                Log.e(TAG, "onInstallReferrerServiceDisconnected")
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+            }
+        })
     }
 
     private fun initDeepLinkSdks() {
@@ -74,9 +84,9 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
             Log.e("data", "intent.data is null")
         } else {
             if (intent.data != null)
-            Log.e("data", intent.data.toString())
+                Log.e("data", intent.data.toString())
             if (intent.extras != null)
-            Log.e("data", intent.extras.toString())
+                Log.e("data", intent.extras.toString())
         }
         FirebaseDynamicLinks.getInstance().getDynamicLink(intent).addOnSuccessListener { pendingDynamicLinkData ->
             if (pendingDynamicLinkData != null) {
