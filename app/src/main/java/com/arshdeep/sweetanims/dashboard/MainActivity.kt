@@ -15,6 +15,7 @@ import com.android.installreferrer.api.InstallReferrerStateListener
 import com.arshdeep.sweetanims.AppConstants
 import com.arshdeep.sweetanims.R
 import com.arshdeep.sweetanims.custom_view.DividerItemDecoration
+import com.arshdeep.sweetanims.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -26,9 +27,10 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import io.branch.referral.Branch
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
+
+    lateinit var binding: ActivityMainBinding
 
     private val TAG = "UpdateStatus"
 
@@ -39,7 +41,8 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Branch.getAutoInstance(applicationContext)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         // Creates instance of the manager.
         appUpdateManager = AppUpdateManagerFactory.create(this)
         init()
@@ -62,17 +65,21 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
                         Log.d(TAG, response.referrerClickTimestampSeconds.toString())
                         Log.d(TAG, response.installBeginTimestampSeconds.toString())
 //                        Log.d(TAG, response.googlePlayInstantParam.toString())
+                        Toast.makeText(this@MainActivity, response.installReferrer, Toast.LENGTH_SHORT).show()
                         referrerClient.endConnection()
                     }
                     InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> {
+                        Toast.makeText(this@MainActivity, "FEATURE_NOT_SUPPORTED", Toast.LENGTH_SHORT).show()
                     }
                     InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> {
+                        Toast.makeText(this@MainActivity, "SERVICE_UNAVAILABLE", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
 
             override fun onInstallReferrerServiceDisconnected() {
                 Log.e(TAG, "onInstallReferrerServiceDisconnected")
+                Toast.makeText(this@MainActivity, "onInstallReferrerServiceDisconnected", Toast.LENGTH_SHORT).show()
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
             }
@@ -91,7 +98,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         FirebaseDynamicLinks.getInstance().getDynamicLink(intent).addOnSuccessListener { pendingDynamicLinkData ->
             if (pendingDynamicLinkData != null) {
                 Toast.makeText(this@MainActivity, pendingDynamicLinkData.link.getQueryParameter("name"), Toast.LENGTH_SHORT).show()
-                Log.e("firebase", pendingDynamicLinkData.link.getQueryParameter("name"))
+                Log.e("firebase", pendingDynamicLinkData.link.getQueryParameter("name")!!)
             } else {
                 Log.e("firebase", "data is null")
             }
@@ -142,9 +149,9 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         val animationList = resources.getStringArray(R.array.animation_list)
         var list = mutableListOf<String>()
         animationList.forEach { list.add(it) }
-        recycler_view.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        recycler_view.adapter = AnimationListAdapter(this, list)
-        recycler_view.addItemDecoration(DividerItemDecoration(this, R.drawable.divider))
+        binding.recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        binding.recyclerView.adapter = AnimationListAdapter(this, list)
+        binding.recyclerView.addItemDecoration(DividerItemDecoration(this, R.drawable.divider))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -152,8 +159,8 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.flexible -> doUpdate(AppUpdateType.FLEXIBLE)
             R.id.immediate -> doUpdate(AppUpdateType.IMMEDIATE)
         }
@@ -217,7 +224,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
         snackbar.show()
     }
 
-    override fun onStateUpdate(state: InstallState?) {
+    override fun onStateUpdate(state: InstallState) {
         Log.d(TAG, "installStatus = ${state?.installStatus()}")
         Log.d(TAG, "installErrorCode = ${state?.installErrorCode()}")
         if (state?.installStatus() == InstallStatus.DOWNLOADED) {

@@ -3,63 +3,66 @@ package com.arshdeep.sweetanims.circular_reveal
 import android.animation.Animator
 import android.content.res.ColorStateList
 import android.os.Bundle
-import androidx.core.content.res.ResourcesCompat
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.view.ViewAnimationUtils
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import com.arshdeep.sweetanims.R
-import kotlinx.android.synthetic.main.activity_circular_reveal.*
+import com.arshdeep.sweetanims.databinding.ActivityCircularRevealBinding
 
 class CircularRevealActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityCircularRevealBinding
 
     private var isOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_circular_reveal)
+        binding = ActivityCircularRevealBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        fab.setOnClickListener { viewMenu() }
+        binding.fab.setOnClickListener { viewMenu() }
     }
 
     private fun viewMenu() {
 
         if (!isOpen) {
 
-            val x = layoutContent!!.right
-            val y = layoutContent!!.bottom
+            val x = binding.layoutContent!!.right
+            val y = binding.layoutContent!!.bottom
 
             val startRadius = 0
-            val endRadius = Math.hypot(layoutMain!!.width.toDouble(), layoutMain!!.height.toDouble()).toInt()
+            val endRadius = Math.hypot(binding.layoutMain!!.width.toDouble(), binding.layoutMain!!.height.toDouble()).toInt()
 
-            fab!!.backgroundTintList = ColorStateList.valueOf(ResourcesCompat.getColor(resources, android.R.color.white, null))
-            fab!!.setImageResource(R.drawable.ic_close_grey)
+            binding.fab!!.backgroundTintList = ColorStateList.valueOf(ResourcesCompat.getColor(resources, android.R.color.white, null))
+            binding.fab!!.setImageResource(R.drawable.ic_close_grey)
 
-            val anim = ViewAnimationUtils.createCircularReveal(layoutButtons, x, y, startRadius.toFloat(), endRadius.toFloat())
+            val anim = ViewAnimationUtils.createCircularReveal(binding.layoutButtons, x, y, startRadius.toFloat(), endRadius.toFloat())
 
-            layoutButtons!!.visibility = View.VISIBLE
+            binding.layoutButtons!!.visibility = View.VISIBLE
             anim.start()
 
             isOpen = true
 
         } else {
 
-            val x = layoutButtons!!.right
-            val y = layoutButtons!!.bottom
+            val x = binding.layoutButtons!!.right
+            val y = binding.layoutButtons!!.bottom
 
-            val startRadius = Math.max(layoutContent!!.width, layoutContent!!.height)
+            val startRadius = Math.max(binding.layoutContent!!.width, binding.layoutContent!!.height)
             val endRadius = 0
 
-            fab!!.backgroundTintList = ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.colorAccent, null))
-            fab!!.setImageResource(R.drawable.ic_plus_white)
+            binding.fab!!.backgroundTintList = ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.colorAccent, null))
+            binding.fab!!.setImageResource(R.drawable.ic_plus_white)
 
-            val anim = ViewAnimationUtils.createCircularReveal(layoutButtons, x, y, startRadius.toFloat(), endRadius.toFloat())
+            val anim = ViewAnimationUtils.createCircularReveal(binding.layoutButtons, x, y, startRadius.toFloat(), endRadius.toFloat())
             anim.addListener(object : Animator.AnimatorListener {
                 override fun onAnimationStart(animator: Animator) {
 
                 }
 
                 override fun onAnimationEnd(animator: Animator) {
-                    layoutButtons!!.visibility = View.GONE
+                    binding.layoutButtons!!.visibility = View.GONE
                 }
 
                 override fun onAnimationCancel(animator: Animator) {
