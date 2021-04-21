@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
             if (intent.extras != null)
                 Log.e("data", intent.extras.toString())
         }
-        FirebaseDynamicLinks.getInstance().getDynamicLink(intent).addOnSuccessListener { pendingDynamicLinkData ->
+        /*FirebaseDynamicLinks.getInstance().getDynamicLink(intent).addOnSuccessListener { pendingDynamicLinkData ->
             if (pendingDynamicLinkData != null) {
                 Toast.makeText(this@MainActivity, pendingDynamicLinkData.link.getQueryParameter("name"), Toast.LENGTH_SHORT).show()
                 Log.e("firebase", pendingDynamicLinkData.link.getQueryParameter("name")!!)
@@ -104,10 +104,10 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
             }
         }.addOnFailureListener {
             Log.e("firebase", "failure")
-        }
+        }*/
 
         // Branch init
-        Branch.getInstance().initSession({ referringParams, error ->
+        /*Branch.getInstance().initSession({ referringParams, error ->
             if (error == null) {
                 Log.e("BRANCH SDK", referringParams.toString())
                 Toast.makeText(this@MainActivity, referringParams.toString(), Toast.LENGTH_SHORT).show()
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
             } else {
                 Log.e("BRANCH SDK", error.message)
             }
-        }, this.intent.data, this)
+        }, this.intent.data, this)*/
     }
 
     override fun onResume() {
