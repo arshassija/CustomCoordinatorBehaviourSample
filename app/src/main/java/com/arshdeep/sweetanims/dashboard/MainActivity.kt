@@ -25,8 +25,6 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
-import io.branch.referral.Branch
 
 class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
@@ -40,7 +38,6 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Branch.getAutoInstance(applicationContext)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         // Creates instance of the manager.
