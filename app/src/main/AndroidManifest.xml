@@ -33,6 +33,10 @@
             android:name=".animate_changes.AnimateLayoutChangesActivity"
             android:screenOrientation="portrait" />
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6542310571524170~8345998265" />
+
     </application>
 
 </manifest>

@@ -16,6 +16,10 @@ import com.arshdeep.sweetanims.AppConstants
 import com.arshdeep.sweetanims.R
 import com.arshdeep.sweetanims.custom_view.DividerItemDecoration
 import com.arshdeep.sweetanims.databinding.ActivityMainBinding
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -36,10 +40,13 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
 
     private lateinit var referrerClient: InstallReferrerClient
 
+    private lateinit var adView: AdView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        MobileAds.initialize(this)
         // Creates instance of the manager.
         appUpdateManager = AppUpdateManagerFactory.create(this)
         init()
@@ -48,6 +55,48 @@ class MainActivity : AppCompatActivity(), InstallStateUpdatedListener {
             initDeepLinkSdks()
         }, 5000)
         getInstallReferrerData()
+
+        adView = findViewById(R.id.adView)
+        adView.adListener = object : AdListener() {
+            val TAG = "admob"
+            override fun onAdClosed() {
+                super.onAdClosed()
+                Log.e(TAG, "onAdClosed")
+            }
+
+            override fun onAdFailedToLoad(p0: Int) {
+                super.onAdFailedToLoad(p0)
+                Log.e(TAG, "onAdFailedToLoad: $p0")
+            }
+
+            override fun onAdLeftApplication() {
+                super.onAdLeftApplication()
+                Log.e(TAG, "onAdLeftApplication")
+            }
+
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "onAdOpened")
+            }
+
+            override fun onAdLoaded() {
+                super.onAdLoaded()
+                Log.e(TAG, "onAdLoaded")
+            }
+
+            override fun onAdClicked() {
+                super.onAdClicked()
+                Log.e(TAG, "onAdClicked")
+            }
+
+            override fun onAdImpression() {
+                super.onAdImpression()
+                Log.e(TAG, "onAdImpression")
+            }
+        }
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     private fun getInstallReferrerData() {

@@ -8,10 +8,10 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.arshdeep.customanims"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 30
-        versionCode 22
-        versionName "2.2.8"
+        versionCode 23
+        versionName "2.2.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -43,6 +43,8 @@ dependencies {
 //    implementation 'com.google.firebase:firebase-dynamic-links:17.0.0'
 
     implementation 'com.android.installreferrer:installreferrer:1.0'
+
+    implementation 'com.google.firebase:firebase-ads:17.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
